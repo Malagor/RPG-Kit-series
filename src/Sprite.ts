@@ -25,11 +25,12 @@ export class Sprite implements ISprite, IDrawImage {
 	private readonly frameSize: Vector2;
 	private readonly hFrames: number;
 	private readonly vFrames: number;
+	private readonly scale: number;
+
 	private frameMap: Map<number, any>;
 
 	frame: number;
-	private readonly scale: number;
-	private readonly position: Vector2;
+	position: Vector2;
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
