@@ -4,8 +4,9 @@ import { FRAME_SIZE, MOVES, ResourcesType } from './constants.ts';
 import { SpriteFabric } from './Sprite_Fabric.ts';
 import { GameLoop } from './Game_Loop.ts';
 import { Input } from './Input.ts';
-import { gridCell } from './helpers/grid.ts';
+import { isSpaceFree } from './helpers/grid.ts';
 import { moveTowards } from './helpers/moveTowards.ts';
+import { blocks } from './levels/level_01.ts';
 
 const canvas: HTMLCanvasElement = document.querySelector('#game-canvas');
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
@@ -23,12 +24,12 @@ const update = (timeStep: number) => {
 	const distance = moveTowards(heroSprite, heroDestinationPosition, 1);
 	const hasArrived = distance <= 1;
 
-	if (hasArrived) {
+	if(hasArrived) {
 		tryMove();
 	}
 }
 
-const tryMove =() => {
+const tryMove = () => {
 	if(!input.direction) {
 		return;
 	}
@@ -53,10 +54,11 @@ const tryMove =() => {
 		heroSprite.frame = 3;
 	}
 
-	// TODO: Check if that space is free
-
-	heroDestinationPosition.x = nextX;
-	heroDestinationPosition.y = nextY
+	// Validate that the next destination is free
+	if(isSpaceFree(blocks, nextX, nextY)) {
+		heroDestinationPosition.x = nextX;
+		heroDestinationPosition.y = nextY
+	}
 }
 
 const draw = () => {
