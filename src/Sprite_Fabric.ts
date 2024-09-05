@@ -2,6 +2,7 @@ import { resources } from './Resources.ts';
 import { FRAME_SIZE, ResourcesType } from './constants.ts';
 import { Sprite } from './Sprite.ts';
 import { Vector2 } from './Vector2.ts';
+import { gridCell } from './helpers/grid.ts';
 
 export class SpriteFabric {
 	private resourcesCreatorMap: Map<ResourcesType, Sprite> = new Map();
@@ -51,6 +52,7 @@ export class SpriteFabric {
 				hFrames: 3,
 				vFrames: 8,
 				frame: 1,
+				position: new Vector2(gridCell(6), gridCell(5)),
 			})
 	}
 
