@@ -1,7 +1,7 @@
-import { Sprite } from '../Sprite.ts';
 import { Vector2 } from '../Vector2.ts';
+import { GameObject } from '../GameObject.ts';
 
-export function moveTowards(entity: Sprite, destinationPosition: Vector2, speed: number): number {
+export function moveTowards(entity: GameObject, destinationPosition: Vector2, speed: number): number {
 	let [distanceToTravelX, distanceToTravelY] = getDeltas(destinationPosition, entity.position);
 	let distance = calculateDistance(distanceToTravelX, distanceToTravelY);
 
@@ -31,13 +31,13 @@ function calculateDistance(deltaX: number, deltaY: number): number {
 
 /**
  *
- * @param {Vector2} p1 Destination point
- * @param {Vector2} p2 Start point
+ * @param {Vector2} pointTo Destination point
+ * @param {Vector2} pointFrom Start point
  * @return {[number, number]} Returns array of 2 numbers [0: deltaX, 1: deltaY]
  */
-function getDeltas(p1: Vector2, p2: Vector2): [number, number] {
+function getDeltas(pointTo: Vector2, pointFrom: Vector2): [number, number] {
 	return [
-		p1.x - p2.x,
-		p1.y - p2.y
+		pointTo.x - pointFrom.x,
+		pointTo.y - pointFrom.y
 	]
 }
