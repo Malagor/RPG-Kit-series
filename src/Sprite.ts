@@ -1,6 +1,8 @@
 import { Vector2 } from './Vector2.ts';
 import { FRAME_SIZE } from './constants.ts';
 import { IResource } from './Resources.ts';
+import { FrameIndexPattern } from './FrameIndexPattern.ts';
+import { Animations } from './Animations.ts';
 
 interface SpriteOptions {
 	resource: IResource;
@@ -10,6 +12,7 @@ interface SpriteOptions {
 	frame?: number;
 	scale?: number;
 	position?: Vector2;
+	animations?: Animations | null;
 }
 
 interface ISprite {
@@ -26,6 +29,7 @@ export class Sprite implements ISprite, IDrawImage {
 	private readonly hFrames: number;
 	private readonly vFrames: number;
 	private readonly scale: number;
+	readonly animations: Animations | null;
 
 	private frameMap: Map<number, any>;
 
@@ -42,6 +46,7 @@ export class Sprite implements ISprite, IDrawImage {
 			frame,		// witch frame we want to show
 			scale,		// how large to draw this image
 			position,	// where to draw the image (top left corner)
+			animations,
 		}: SpriteOptions) {
 		this.resources = resource;
 		this.frameSize = frameSize ?? new Vector2(FRAME_SIZE, FRAME_SIZE);
@@ -51,6 +56,7 @@ export class Sprite implements ISprite, IDrawImage {
 		this.scale = scale ?? 1;
 		this.position = position ?? new Vector2(0, 0);
 		this.frameMap = new Map();
+		this.animations = animations ?? null;
 
 		this.buildFrameMap();
 	}
@@ -71,6 +77,13 @@ export class Sprite implements ISprite, IDrawImage {
 				frameCount += 1;
 			}
 		}
+	}
+
+	step(delta: number): void {
+		if(!this.animations) return;
+
+		this.animations.step(delta);
+		this.frame = this.animations.frame;
 	}
 
 	drawImage( x: number, y: number) {
