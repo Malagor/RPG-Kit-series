@@ -1,8 +1,8 @@
 import { Vector2 } from './Vector2.ts';
 import { FRAME_SIZE } from './constants.ts';
 import { IResource } from './Resources.ts';
-import { FrameIndexPattern } from './FrameIndexPattern.ts';
 import { Animations } from './Animations.ts';
+import { GameObject } from './GameObject.ts';
 
 interface SpriteOptions {
 	resource: IResource;
@@ -15,15 +15,7 @@ interface SpriteOptions {
 	animations?: Animations | null;
 }
 
-interface ISprite {
-	constructor(ctx: CanvasRenderingContext2D, options: SpriteOptions): ISprite,
-}
-
-export interface IDrawImage {
-	drawImage(x: number, y: number): void;
-}
-
-export class Sprite implements ISprite, IDrawImage {
+export class Sprite extends GameObject{
 	private readonly resources: IResource;
 	private readonly frameSize: Vector2;
 	private readonly hFrames: number;
@@ -48,6 +40,8 @@ export class Sprite implements ISprite, IDrawImage {
 			position,	// where to draw the image (top left corner)
 			animations,
 		}: SpriteOptions) {
+		super(ctx, {position});
+
 		this.resources = resource;
 		this.frameSize = frameSize ?? new Vector2(FRAME_SIZE, FRAME_SIZE);
 		this.hFrames = hFrames ?? 1;
