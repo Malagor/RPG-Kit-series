@@ -71,6 +71,7 @@ export class Hero extends GameObject {
     });
 
     this.addChild(shadowSprite, this.body);
+    events.emit(EventNames.HERO_POSITION, this.position);
   }
 
   public step(delta: number, root: GameObject): void {
