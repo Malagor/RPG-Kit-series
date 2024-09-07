@@ -7,6 +7,8 @@ import { Hero } from "./objects/Hero/Hero.ts";
 import { gridCell } from "./helpers/grid.ts";
 import { Sky } from "./objects/Sky/Sky.ts";
 import { Ground } from "./objects/Ground/Ground.ts";
+import { events } from "./Events.ts";
+import { EventNames } from "./EventNames.ts";
 
 const canvas: HTMLCanvasElement = document.querySelector("#game-canvas");
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
@@ -22,6 +24,10 @@ const ground = new Ground(ctx);
 const hero = new Hero(ctx, gridCell(6), gridCell(5));
 
 mainScene.addChild(sky, ground, hero);
+
+events.on(EventNames.HERO_POSITION, mainScene, (heroPosition) => {
+  console.log("HERO MOVED!", heroPosition);
+});
 
 const update = (timeStep: number): void => {
   mainScene.stepEntry(timeStep, mainScene);
