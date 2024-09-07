@@ -18,6 +18,8 @@ import {
   WALK_UP,
 } from "./hero.animations.ts";
 import { moveTowards } from "../../helpers/moveTowards.ts";
+import { events } from "../../Events.ts";
+import { EventNames } from "../../EventNames.ts";
 
 export enum HeroMoves {
   WALK_DOWN = "walkDown",
@@ -31,9 +33,10 @@ export enum HeroMoves {
 }
 
 export class Hero extends GameObject {
-  heroFacing: MOVES = MOVES.GO_DOWN;
-  destinationPosition = this.position.duplicate();
-  body: Sprite;
+  private heroFacing: MOVES = MOVES.GO_DOWN;
+  private destinationPosition = this.position.duplicate();
+  private readonly body: Sprite;
+  private lastHeroPosition = this.position.duplicate();
 
   constructor(ctx: CanvasRenderingContext2D, x: number, y: number) {
     super(ctx, {
@@ -78,6 +81,17 @@ export class Hero extends GameObject {
     if (hasArrived) {
       this.tryMove(root);
     }
+
+    this.tryEmitPosition();
+  }
+
+  tryEmitPosition(): void {
+    if (this.position.isEqual(this.lastHeroPosition)) {
+      return;
+    }
+    this.lastHeroPosition = this.position.duplicate();
+
+    events.emit(EventNames.HERO_POSITION, this.lastHeroPosition);
   }
 
   tryMove(root: GameObject): void {
