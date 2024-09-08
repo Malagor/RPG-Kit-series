@@ -8,6 +8,7 @@ import { resources } from "../../Resources.ts";
 import { Animations } from "../../Animations.ts";
 import { FrameIndexPattern } from "../../FrameIndexPattern.ts";
 import {
+  PICKUP_DOWN,
   STAND_DOWN,
   STAND_LEFT,
   STAND_RIGHT,
@@ -20,6 +21,7 @@ import {
 import { moveTowards } from "../../helpers/moveTowards.ts";
 import { events } from "../../Events.ts";
 import { EventNames } from "../../EventNames.ts";
+import { IPickUpItemData } from "../../types.ts";
 
 export enum HeroMoves {
   WALK_DOWN = "walkDown",
@@ -30,13 +32,16 @@ export enum HeroMoves {
   STAND_UP = "standUp",
   STAND_LEFT = "standLeft",
   STAND_RIGHT = "standRight",
+  PICKUP_DOWN = "pickupDown",
 }
 
 export class Hero extends GameObject {
+  private readonly body: Sprite;
   private heroFacing: MOVES = MOVES.GO_DOWN;
   private destinationPosition = this.position.duplicate();
-  private readonly body: Sprite;
   private lastHeroPosition = this.position.duplicate();
+  private itemPickupTime: number = 0;
+  private itemPickupShell: GameObject | null = null;
 
   constructor(ctx: CanvasRenderingContext2D, x: number, y: number) {
     super(ctx, {
@@ -67,14 +72,29 @@ export class Hero extends GameObject {
         [HeroMoves.STAND_UP]: new FrameIndexPattern(STAND_UP),
         [HeroMoves.STAND_LEFT]: new FrameIndexPattern(STAND_LEFT),
         [HeroMoves.STAND_RIGHT]: new FrameIndexPattern(STAND_RIGHT),
+        [HeroMoves.PICKUP_DOWN]: new FrameIndexPattern(PICKUP_DOWN),
       }),
     });
 
     this.addChild(shadowSprite, this.body);
     events.emit(EventNames.HERO_POSITION, this.position);
+    events.on(
+      EventNames.HERO_PICKS_UP_ITEM,
+      this,
+      (data: IPickUpItemData): void => {
+        this.onPickUpItem(data);
+      },
+    );
   }
 
   public step(delta: number, root: GameObject): void {
+    // Lock movement if celebrating an item pickup
+    if (this.itemPickupTime > 0) {
+      this.workOnItemPickup(delta);
+
+      return;
+    }
+
     const distance = moveTowards(this, this.destinationPosition, 1);
     const hasArrived = distance <= 1;
 
@@ -145,5 +165,33 @@ export class Hero extends GameObject {
       this.destinationPosition.x = nextX;
       this.destinationPosition.y = nextY;
     }
+  }
+
+  workOnItemPickup(delta: number): void {
+    this.itemPickupTime -= delta;
+    this.body.animations?.play(HeroMoves.PICKUP_DOWN);
+
+    if (this.itemPickupTime <= 0) {
+      this.itemPickupShell?.destroy();
+      this.itemPickupShell = null;
+    }
+  }
+
+  onPickUpItem({ image, position }: IPickUpItemData): void {
+    // Make sure we land right on the item
+    this.destinationPosition = position.duplicate();
+
+    // Start the pickup animation
+    this.itemPickupTime = 1000;
+
+    this.itemPickupShell = new GameObject(this.ctx);
+    this.itemPickupShell.addChild(
+      new Sprite(this.ctx, {
+        resource: image,
+        position: new Vector2(0, -18),
+      }),
+    );
+
+    this.addChild(this.itemPickupShell);
   }
 }

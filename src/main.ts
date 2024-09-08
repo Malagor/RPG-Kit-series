@@ -8,6 +8,7 @@ import { gridCell } from "./helpers/grid.ts";
 import { Sky } from "./objects/Sky/Sky.ts";
 import { Ground } from "./objects/Ground/Ground.ts";
 import { Camera } from "./Camera.ts";
+import { Rod } from "./objects/Rod/Rod.ts";
 
 const canvas: HTMLCanvasElement = document.querySelector("#game-canvas");
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
@@ -22,8 +23,9 @@ const sky = new Sky(ctx);
 const ground = new Ground(ctx);
 const camera = new Camera(ctx);
 const hero = new Hero(ctx, gridCell(6), gridCell(5));
+const rod = new Rod(ctx, gridCell(7), gridCell(6));
 
-mainScene.addChild(ground, hero, camera);
+mainScene.addChild(ground, hero, camera, rod);
 
 const update = (timeStep: number): void => {
   mainScene.stepEntry(timeStep, mainScene);

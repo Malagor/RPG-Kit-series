@@ -1,9 +1,11 @@
+import { GameObject } from "./GameObject.ts";
+
 export type EventCallback = (value: any) => void;
 
 interface IEventItem {
   id: number;
   eventName: number;
-  caller: any;
+  caller: GameObject;
   callback: EventCallback;
 }
 
@@ -19,7 +21,7 @@ class Events {
     });
   }
 
-  on(eventName: number, caller: any, callback: EventCallback): number {
+  on(eventName: number, caller: GameObject, callback: EventCallback): number {
     this.nextId += 1;
     this.callbacks.push({
       id: this.nextId,
@@ -35,7 +37,7 @@ class Events {
     this.callbacks = this.callbacks.filter((stored) => stored.id !== id);
   }
 
-  unsubscribe(caller: any): void {
+  unsubscribe(caller: GameObject): void {
     this.callbacks = this.callbacks.filter(
       (stored) => stored.caller !== caller,
     );
