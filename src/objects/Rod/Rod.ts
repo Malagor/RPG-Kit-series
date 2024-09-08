@@ -23,11 +23,12 @@ export class Rod extends GameObject {
     });
 
     this.addChild(sprite);
+  }
 
+  public ready(): void {
     events.on(EventNames.HERO_POSITION, this, (pos) => {
       if (!this.position.isEqual(pos)) return;
 
-      console.log("Overlap rod");
       this.onCollideWithHero();
     });
   }
