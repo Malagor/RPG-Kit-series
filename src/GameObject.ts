@@ -7,6 +7,8 @@ interface IGameObjectOptions {
 }
 
 export class GameObject {
+  private hasReadyBeenCalled = false;
+
   position: Vector2;
   children: GameObject[] = [];
   parent: GameObject | null = null;
@@ -19,9 +21,21 @@ export class GameObject {
     this.position = position ?? new Vector2(0, 0);
   }
 
+  // Call before the first "step"
+  ready(): void {
+    // ..
+  }
+
   stepEntry(delta: number, root: GameObject): void {
     this.children.forEach((child: GameObject) => child.stepEntry(delta, root));
 
+    // Call ready on the first frame
+    if (!this.hasReadyBeenCalled) {
+      this.hasReadyBeenCalled = true;
+      this.ready();
+    }
+
+    // Call once every frame
     this.step(delta, root);
   }
 
