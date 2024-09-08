@@ -9,6 +9,7 @@ import { Sky } from "./objects/Sky/Sky.ts";
 import { Ground } from "./objects/Ground/Ground.ts";
 import { Camera } from "./Camera.ts";
 import { Rod } from "./objects/Rod/Rod.ts";
+import { Inventory } from "./objects/Inventory/Inventory.ts";
 
 const canvas: HTMLCanvasElement = document.querySelector("#game-canvas");
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
@@ -24,6 +25,7 @@ const ground = new Ground(ctx);
 const camera = new Camera(ctx);
 const hero = new Hero(ctx, gridCell(6), gridCell(5));
 const rod = new Rod(ctx, gridCell(7), gridCell(6));
+const inventory = new Inventory(ctx);
 
 mainScene.addChild(ground, hero, camera, rod);
 
@@ -48,6 +50,9 @@ const draw = (): void => {
 
   // Restore to original state
   ctx.restore();
+
+  // Draw anything above the game
+  inventory.draw(0, 0);
 };
 
 const gameLoop = new GameLoop(update, draw);
